@@ -1,4 +1,4 @@
-use std::{fmt::Write, panic};
+use std::{ fmt::Write, panic };
 
 use js_sys::JsString;
 use log::*;
@@ -31,25 +31,22 @@ impl log::Log for JsNotify {
 }
 
 pub fn setup_logging(verbosity: log::LevelFilter) {
-    fern::Dispatch::new()
+    fern::Dispatch
+        ::new()
         .level(verbosity)
         .format(|out, message, record| {
-            out.finish(format_args!(
-                "({}) {}: {}",
-                record.level(),
-                record.target(),
-                message
-            ))
+            out.finish(format_args!("({}) {}: {}", record.level(), record.target(), message))
         })
         .chain(Box::new(JsLog) as Box<dyn log::Log>)
         .chain(
-            fern::Dispatch::new()
+            fern::Dispatch
+                ::new()
                 .level(log::LevelFilter::Warn)
                 .format(|out, message, _record| {
                     let time = game::time();
                     out.finish(format_args!("[{}] {}", time, message))
                 })
-                .chain(Box::new(JsNotify) as Box<dyn log::Log>),
+                .chain(Box::new(JsNotify) as Box<dyn log::Log>)
         )
         .apply()
         .expect("expected setup_logging to only ever be called once per instance");
@@ -90,8 +87,7 @@ fn panic_hook(info: &panic::PanicHookInfo) {
             for line in stack
                 .lines()
                 .skip_while(|line| !line.contains("__rust_end_short_backtrace"))
-                .skip(1)
-            {
+                .skip(1) {
                 let _ = writeln!(fmt_error, "{}", line);
             }
         } else {
