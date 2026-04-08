@@ -1,17 +1,15 @@
-use std::{
-    cell::RefCell,
-    collections::{hash_map::Entry, HashMap, HashSet},
-};
+use std::{ cell::RefCell, collections::{ hash_map::Entry, HashMap, HashSet } };
 
-use js_sys::{JsString, Object, Reflect};
+use js_sys::{ JsString, Object, Reflect };
 use log::*;
 use screeps::{
     action_error_codes::*,
-    constants::{Part, ResourceType},
+    constants::{ Part, ResourceType },
     enums::StructureObject,
-    find, game,
+    find,
+    game,
     local::ObjectId,
-    objects::{Creep, Source, StructureController},
+    objects::{ Creep, Source, StructureController },
     prelude::*,
 };
 use wasm_bindgen::prelude::*;
@@ -62,12 +60,20 @@ pub fn game_loop() {
         debug!("running spawn {}", spawn.name());
 
         let body = [Part::Move, Part::Move, Part::Carry, Part::Work];
-        if spawn.room().unwrap().energy_available() >= body.iter().map(|p| p.cost()).sum() {
+        if
+            spawn.room().unwrap().energy_available() >=
+            body
+                .iter()
+                .map(|p| p.cost())
+                .sum()
+        {
             // create a unique name, spawn.
             let name_base = game::time();
             let name = format!("{}-{}", name_base, additional);
             match spawn.spawn_creep(&body, &name) {
-                Ok(()) => additional += 1,
+                Ok(()) => {
+                    additional += 1;
+                }
                 Err(e) => warn!("couldn't spawn: {:?}", e),
             }
         }
@@ -116,13 +122,12 @@ fn run_creep(creep: &Creep, creep_targets: &mut HashMap<String, CreepTarget>) {
         Entry::Occupied(entry) => {
             let creep_target = entry.get();
             match creep_target {
-                CreepTarget::Upgrade(controller_id)
-                    if creep.store().get_used_capacity(Some(ResourceType::Energy)) > 0 =>
-                {
+                CreepTarget::Upgrade(controller_id) if
+                    creep.store().get_used_capacity(Some(ResourceType::Energy)) > 0
+                => {
                     if let Some(controller) = controller_id.resolve() {
-                        creep
-                            .upgrade_controller(&controller)
-                            .unwrap_or_else(|e| match e {
+                        creep.upgrade_controller(&controller).unwrap_or_else(|e| {
+                            match e {
                                 UpgradeControllerErrorCode::NotInRange => {
                                     let _ = creep.move_to(&controller);
                                 }
@@ -130,14 +135,15 @@ fn run_creep(creep: &Creep, creep_targets: &mut HashMap<String, CreepTarget>) {
                                     warn!("couldn't upgrade: {:?}", e);
                                     entry.remove();
                                 }
-                            });
+                            }
+                        });
                     } else {
                         entry.remove();
                     }
                 }
-                CreepTarget::Harvest(source_id)
-                    if creep.store().get_free_capacity(Some(ResourceType::Energy)) > 0 =>
-                {
+                CreepTarget::Harvest(source_id) if
+                    creep.store().get_free_capacity(Some(ResourceType::Energy)) > 0
+                => {
                     if let Some(source) = source_id.resolve() {
                         if creep.pos().is_near_to(source.pos()) {
                             creep.harvest(&source).unwrap_or_else(|e| {
@@ -154,7 +160,7 @@ fn run_creep(creep: &Creep, creep_targets: &mut HashMap<String, CreepTarget>) {
                 _ => {
                     entry.remove();
                 }
-            };
+            }
         }
         Entry::Vacant(entry) => {
             // no target, let's find one depending on if we have energy
