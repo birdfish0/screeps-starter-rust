@@ -1,9 +1,9 @@
 "use strict";
 import 'fastestsmallesttextencoderdecoder-encodeinto/EncoderDecoderTogether.min.js';
 
-import * as bot from '../pkg/screeps_starter_rust.js';
+import * as bot from '../pkg/screeps_rust.js';
 // replace this with the name of your module
-const MODULE_NAME = "screeps_starter_rust";
+const MODULE_NAME = "screeps_rust";
 const BUCKET_BOOT_THRESHOLD = 1500;
 
 // This provides the function `console.error` that wasm_bindgen sometimes expects to exist,

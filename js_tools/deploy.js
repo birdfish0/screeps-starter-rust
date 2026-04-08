@@ -12,7 +12,7 @@ const terser = require('@rollup/plugin-terser');
 
 const { ScreepsAPI } = require('screeps-api');
 const yaml = require('yamljs');
-const argv = require('yargs')
+const argv = {server: "ptr", dryrun: false}/*require('yargs')()
   .option('server', {
     describe: 'server to connect to; must be defined in .screeps.yaml servers section',
   })
@@ -22,7 +22,7 @@ const argv = require('yargs')
     type: 'boolean',
     default: false,
   })
-  .argv;
+  .argv;*/
 
 const package_name_underscore = process.env.npm_package_name.replace(/\-/g, "_");
 
@@ -144,7 +144,7 @@ async function upload(code, server, branch, dryrun) {
   if (dryrun) {
     console.log(`Not uploading due to --dryrun; would use ${usage_string}`);
   } else {
-    console.log(`Uploading to branch ${branch}; using ${usage_string}`);
+    console.log(`Uploading to branch ${branch} of server ${server}; using ${usage_string}`);
     const api = await ScreepsAPI.fromConfig(server);
     const response = await api.code.set(branch, code.modules);
     console.log(JSON.stringify(response));
