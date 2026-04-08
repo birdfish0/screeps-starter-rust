@@ -15,6 +15,7 @@ use screeps::{
 use wasm_bindgen::prelude::*;
 
 mod logging;
+mod data;
 
 // this is one way to persist data between ticks within Rust's memory, as opposed to
 // keeping state in memory on game objects - but will be lost on global resets!
